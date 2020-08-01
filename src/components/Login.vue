@@ -71,7 +71,7 @@ export default {
             username: this.loginForm.username,
             password: this.loginForm.password
           })
-          console.log(res)
+          // console.log(res)
           if (res.meta.status === 200) {
             this.$message({
               message: '登录成功！',
