@@ -3,7 +3,7 @@
     <!-- 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{path: '/users'}">用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/users' }">用户管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片视图区域 -->
@@ -23,7 +23,7 @@
             </el-input>
           </el-col>
           <el-col :span="6">
-            <el-button type="primary" @click="addDialogVisible=true">添加用户</el-button>
+            <el-button type="primary" @click="addDialogVisible = true">添加用户</el-button>
           </el-col>
         </el-row>
         <!-- 用户列表区域 -->
@@ -45,21 +45,26 @@
             </template>
           </el-table-column>
           <el-table-column label="操作" width="180">
-            <template slot-scope="slot">
+            <template slot-scope="scope">
               <el-button
                 size="mini"
                 type="primary"
                 icon="el-icon-edit"
-                @click="showEditDialog(slot.row)"
+                @click="showEditDialog(scope.row)"
               ></el-button>
               <el-button
                 size="mini"
                 type="danger"
                 icon="el-icon-delete"
-                @click="deleteUser(slot.row)"
+                @click="deleteUser(scope.row)"
               ></el-button>
               <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-                <el-button size="mini" type="warning" icon="el-icon-setting" @click="(slot)"></el-button>
+                <el-button
+                  size="mini"
+                  type="warning"
+                  icon="el-icon-setting"
+                  @click="setRole(scope.row)"
+                ></el-button>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -119,6 +124,33 @@
         <el-button type="primary" @click="editUser">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配角色对话框 -->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="setRoleDialogVisible"
+      width="50%"
+      @close="setRoleDialogColsed"
+    >
+      <div>
+        <p>当前的用户：{{userInfo.username}}</p>
+        <p>当前的角色：{{userInfo.role_name}}</p>
+        <p>
+          分配新角色：
+          <el-select v-model="roleSelect" placeholder="请选择角色">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -164,7 +196,12 @@ export default {
         ],
         password: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 6, max: 10, message: '长度在 6 到 10 个字符', trigger: 'blur' }
+          {
+            min: 6,
+            max: 10,
+            message: '长度在 6 到 10 个字符',
+            trigger: 'blur'
+          }
         ],
         email: [
           { required: true, message: '请输入邮箱', trigger: 'blur' },
@@ -188,7 +225,11 @@ export default {
         username: '',
         email: '',
         mobile: ''
-      }
+      },
+      setRoleDialogVisible: false,
+      userInfo: {},
+      rolesList: [],
+      roleSelect: ''
     }
   },
   methods: {
@@ -231,7 +272,7 @@ export default {
     },
     // 添加角色
     addUser() {
-      this.$refs.addFormRef.validate(async valid => {
+      this.$refs.addFormRef.validate(async (valid) => {
         if (valid) {
           const { data: res } = await this.$http.post('users', this.addForm)
           console.log(res)
@@ -296,10 +337,36 @@ export default {
         .catch(() => {
           this.$message('已取消')
         })
+    },
+    // 分配角色
+    async setRole(role) {
+      this.userInfo = role
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      this.rolesList = res.data
+      this.setRoleDialogVisible = true
+    },
+    // 保存角色修改
+    async saveRoleInfo() {
+      if (this.roleSelect === '') {
+        return this.$message.error('请选择角色')
+      }
+      const { data: res } = await this.$http.put('users/' + this.userInfo.id + '/role', { rid: this.roleSelect })
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      this.$message.success('更新角色成功')
+      this.setRoleDialogVisible = false
+      this.getUsersList()
+    },
+    setRoleDialogColsed() {
+      this.roleSelect = ''
+      this.userInfo = {}
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

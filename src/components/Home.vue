@@ -87,8 +87,13 @@ export default {
     // 获取所有菜单
     async getMenuList() {
       const { data: res } = await this.$http.get('menus')
-      console.log(res.data)
-      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      // console.log(res.data)
+      if (res.meta.status !== 200) {
+        if (res.meta.status === 400) {
+          return this.$router.push('login')
+        }
+        return this.$message.error(res.meta.msg)
+      }
       this.menuList = res.data
     },
     toggle() {
