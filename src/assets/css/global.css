@@ -33,3 +33,14 @@ body,
 .el-cascader-panel {
   height: 100%;
 }
+/* 步骤条标题字体大小 */
+.el-steps {
+  margin-top: 15px;
+}
+.el-step__title {
+  font-size: 13px;
+}
+/* 富文本编辑器高度 */
+.ql-editor {
+  min-height: 300px;
+}
