@@ -2,7 +2,7 @@
   <el-container class="home-container">
     <el-header>
       <router-link to="/home">
-        <div>
+        <div @click="clearActive">
           <img src="../assets/logo.png" />
           <span>电商后台管理系统</span>
         </div>
@@ -32,6 +32,7 @@
           :collapse-transition="false"
           :default-active="activePath"
           @select="saveNavState"
+          ref="menu"
         >
           <!-- 一级菜单 -->
           <el-submenu
@@ -109,6 +110,11 @@ export default {
     saveNavState(index) {
       this.activePath = index
       window.sessionStorage.setItem('nav', index)
+    },
+    clearActive() {
+      console.log(123)
+      this.activePath = ''
+      window.sessionStorage.removeItem('nav')
     }
   }
 }

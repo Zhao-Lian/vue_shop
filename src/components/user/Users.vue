@@ -19,11 +19,17 @@
               clearable
               @clear="getUsersList"
             >
-              <el-button slot="append" icon="el-icon-search" @click="getUsersList"></el-button>
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                @click="getUsersList"
+              ></el-button>
             </el-input>
           </el-col>
           <el-col :span="6">
-            <el-button type="primary" @click="addDialogVisible = true">添加用户</el-button>
+            <el-button type="primary" @click="addDialogVisible = true"
+              >添加用户</el-button
+            >
           </el-col>
         </el-row>
         <!-- 用户列表区域 -->
@@ -31,7 +37,11 @@
           <el-table-column type="index"></el-table-column>
           <el-table-column prop="username" label="用户名"></el-table-column>
           <el-table-column prop="role_name" label="角色"></el-table-column>
-          <el-table-column prop="create_time" label="日期"></el-table-column>
+          <el-table-column prop="create_time" label="日期" width="180">
+            <template slot-scope="scope">{{
+              scope.row.create_time | dateFormat
+            }}</template>
+          </el-table-column>
           <el-table-column prop="email" label="邮箱"></el-table-column>
           <el-table-column prop="mobile" label="电话"></el-table-column>
           <el-table-column label="状态">
@@ -58,7 +68,12 @@
                 icon="el-icon-delete"
                 @click="deleteUser(scope.row)"
               ></el-button>
-              <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+              <el-tooltip
+                effect="dark"
+                content="分配角色"
+                placement="top"
+                :enterable="false"
+              >
                 <el-button
                   size="mini"
                   type="warning"
@@ -82,9 +97,19 @@
       </div>
     </el-card>
     <!-- 添加用户的对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="50%" @close="addDialogClosed">
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
       <!-- 内容主体区 -->
-      <el-form label-width="70px" :model="addForm" :rules="addFormRules" ref="addFormRef">
+      <el-form
+        label-width="70px"
+        :model="addForm"
+        :rules="addFormRules"
+        ref="addFormRef"
+      >
         <el-form-item label="用户名" prop="username">
           <el-input v-model="addForm.username"></el-input>
         </el-form-item>
@@ -105,9 +130,18 @@
       </span>
     </el-dialog>
     <!-- 修改用户的对话框 -->
-    <el-dialog title="修改用户信息" :visible.sync="editDialogVisible" width="50%">
+    <el-dialog
+      title="修改用户信息"
+      :visible.sync="editDialogVisible"
+      width="50%"
+    >
       <!-- 内容主体区 -->
-      <el-form label-width="70px" :model="editForm" :rules="addFormRules" ref="editFormRef">
+      <el-form
+        label-width="70px"
+        :model="editForm"
+        :rules="addFormRules"
+        ref="editFormRef"
+      >
         <el-form-item label="用户名">
           <el-input v-model="editForm.username" disabled></el-input>
         </el-form-item>
@@ -132,8 +166,8 @@
       @close="setRoleDialogColsed"
     >
       <div>
-        <p>当前的用户：{{userInfo.username}}</p>
-        <p>当前的角色：{{userInfo.role_name}}</p>
+        <p>当前的用户：{{ userInfo.username }}</p>
+        <p>当前的角色：{{ userInfo.role_name }}</p>
         <p>
           分配新角色：
           <el-select v-model="roleSelect" placeholder="请选择角色">
@@ -272,7 +306,7 @@ export default {
     },
     // 添加角色
     addUser() {
-      this.$refs.addFormRef.validate(async (valid) => {
+      this.$refs.addFormRef.validate(async valid => {
         if (valid) {
           const { data: res } = await this.$http.post('users', this.addForm)
           console.log(res)
@@ -353,7 +387,10 @@ export default {
       if (this.roleSelect === '') {
         return this.$message.error('请选择角色')
       }
-      const { data: res } = await this.$http.put('users/' + this.userInfo.id + '/role', { rid: this.roleSelect })
+      const { data: res } = await this.$http.put(
+        'users/' + this.userInfo.id + '/role',
+        { rid: this.roleSelect }
+      )
       if (res.meta.status !== 200) {
         return this.$message.error(res.meta.msg)
       }

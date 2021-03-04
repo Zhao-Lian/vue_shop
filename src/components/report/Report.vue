@@ -8,7 +8,7 @@
     </el-breadcrumb>
     <el-card>
       <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-      <div id="main" style="width: 600px;height:400px;"></div>
+      <div id="main" style="width: 600px; height: 400px"></div>
     </el-card>
   </div>
 </template>
@@ -48,6 +48,17 @@ export default {
           {
             type: 'value'
           }
+        ],
+        color: [
+          '#5470c6',
+          '#91cc75',
+          '#fac858',
+          '#ee6666',
+          '#73c0de',
+          '#3ba272',
+          '#fc8452',
+          '#9a60b4',
+          '#ea7ccc'
         ]
       }
     }
